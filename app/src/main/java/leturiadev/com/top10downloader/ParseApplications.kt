@@ -3,15 +3,13 @@ package leturiadev.com.top10downloader
 import android.util.Log
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
-import java.lang.Exception
 
 class ParseApplications {
-    private val tag = "ParseApplications"
-
+    private val TAG = "ParseApplications"
     val applications = ArrayList<FeedEntry>()
 
     fun parse(xmlData: String): Boolean {
-        Log.d(tag, "parse called with $xmlData")
+        Log.d(TAG, "parse called with $xmlData")
         var status = true
         var inEntry = false
         var textValue = ""
@@ -26,22 +24,26 @@ class ParseApplications {
             while (eventType != XmlPullParser.END_DOCUMENT) {
                 val tagName = xpp.name?.toLowerCase()
                 when (eventType) {
+
                     XmlPullParser.START_TAG -> {
-                        Log.d(tag, "parse: Starting tag for $tagName")
+                        Log.d(TAG, "parse: Starting tag for $tagName")
                         if (tagName == "entry") {
                             inEntry = true
                         }
                     }
+
                     XmlPullParser.TEXT -> textValue = xpp.text
+
                     XmlPullParser.END_TAG -> {
-                        Log.d(tag, "parse: Ending tag for $tagName")
+                        Log.d(TAG, "parse: Ending tag for $tagName")
                         if (inEntry) {
                             when (tagName) {
                                 "entry" -> {
                                     applications.add(currentRecord)
                                     inEntry = false
-                                    currentRecord = FeedEntry()
+                                    currentRecord = FeedEntry()   // create a new object
                                 }
+
                                 "name" -> currentRecord.name = textValue
                                 "artist" -> currentRecord.artist = textValue
                                 "releasedate" -> currentRecord.releaseDate = textValue
@@ -52,18 +54,20 @@ class ParseApplications {
                     }
                 }
 
-//                Nothing else to do
+                // Nothing else to do.
                 eventType = xpp.next()
             }
 
             for (app in applications) {
-                Log.d(tag, "*****************")
-                Log.d(tag, app.toString())
+                Log.d(TAG, "*******************")
+                Log.d(TAG, app.toString())
             }
+
         } catch (e: Exception) {
             e.printStackTrace()
             status = false
         }
+
         return status
     }
 }
